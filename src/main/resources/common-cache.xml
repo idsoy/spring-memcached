@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd ">
+	
+	
+	<bean id="memcachedPool" class="com.danga.MemCached.SockIOPool" factory-method="getInstance" init-method="initialize" destroy-method="shutDown">
+		<constructor-arg>
+			<value>neeaMemcachedPool</value>
+		</constructor-arg>
+		<property name="servers">
+			<list>
+				  <value>${cache.memercached.url}</value>
+			</list>
+		</property>
+		<property name="initConn" value="${cache.memercached.initConn}"/>
+		<property name="minConn" value="${cache.memercached.minConn}"/>
+		<property name="maxConn" value="${cache.memercached.maxConn}"/>
+		<property name="maintSleep" value="${cache.memercached.maintSleep}"/>
+		<property name="nagle" value="${cache.memercached.nagle}"/>
+		<property name="socketTO" value="${cache.memercached.socketTO}"/>
+		<property name="hashingAlg">     <!--  CRC32-->
+           <value>${cache.memercached.hashingAlg}</value>
+        </property>
+		<property name="weights">
+			<list>
+				<value>${cache.memercached.weights}</value>
+				<value>${cache.memercached.weights}</value>
+			</list>
+		</property>
+		
+	</bean>
+	 
+	<bean id="memcachedClient" class="com.danga.MemCached.MemCachedClient">
+		<constructor-arg>
+			<value>neeaMemcachedPool</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="memcachedUtil" class="org.llh.memcached.common.MemcachedUtil"
+		init-method="init" lazy-init="false">
+		<property name="cacheCode" value="1" />
+		<property name="memcachedClient" ref="memcachedClient" />
+		<!-- <property name="timeOuts" value="3000"></property> -->
+		<!-- 60 * 60 * 24 * 3 -->
+		<property name="cacheExpireTime" value="${cache.memercached.cacheExpireTime}"></property>
+	</bean>
+</beans>
